@@ -1,0 +1,10 @@
+
+*.class
+
+scraper/target/classes/log4j.xml
+
+scraper/target/classes/META-INF/MANIFEST.MF
+
+scraper/target/classes/META-INF/maven/scraper/scraper/pom.properties
+
+scraper/target/classes/META-INF/maven/scraper/scraper/pom.xml
