@@ -35,4 +35,18 @@ public class AddressDAO extends BaseDAO{
 		}
 		return list;
 	}
+	
+	public ArrayList<String> getAllStateAcrynm(){
+		ArrayList<String> list = new ArrayList<String>();
+		try { 
+			String query = "select distinct state_a from address";
+			ResultSet rs = dbCon.query(query);
+			while(rs.next()){
+				list.add(rs.getString(1));
+			}
+		}catch(SQLException e){
+			LOG.error("err", e);
+		}
+		return list;
+	}
 }

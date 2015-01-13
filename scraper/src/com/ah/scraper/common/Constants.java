@@ -22,6 +22,8 @@ public class Constants {
 					put("publiclibraries","PublicLibrariesScraper");
 					put("activityrocket","ActivityRocketScraper");
 					put("yellowpages", "YelloPagesScraper");
+					put("bayareaparentkidscamps", "BayAreaParentKidsCampsScraper");
+					put("ymca", "YmcaScraper");
 				}
 			});	 
 	

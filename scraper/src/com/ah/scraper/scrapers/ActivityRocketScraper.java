@@ -18,8 +18,8 @@ import com.ah.scraper.dao.ProviderDAO;
 public class ActivityRocketScraper implements IScraper {
 	
 	private static Logger LOG = LoggerFactory.getLogger(AisneScraper.class);
-	public static String SITE_HOME_URL = "http://www.activityrocket.com/site_ajax_act_provider_search.php?frmSearchType=provider&frmLocationSearch=&alpha=all&frmSortBy=&page=";
-    public static String SOURCE = "activityrocket";
+	public static String SITE_HOME_URL = "https://www.activityrocket.com/site_ajax_act_provider_search.php?frmSearchType=provider&frmLocationSearch=&frmSortBy=&alpha=all&page=";
+   	public static String SOURCE = "activityrocket";
     
     private DBConnection dbCon;
 
@@ -31,8 +31,7 @@ public class ActivityRocketScraper implements IScraper {
 			LOG.info("ActivityRocketScraper run called");
 			this.startScraping();
 		} catch (Exception e) { 
-			e.printStackTrace();
-			//LOG.error("err",e);
+			LOG.error("err",e);
 		}
 		//close connections
 		try{
@@ -47,10 +46,8 @@ public class ActivityRocketScraper implements IScraper {
 		MainPageDAO htmlDAO = new MainPageDAO(dbCon);
 		ProviderDAO providerDAO = new ProviderDAO(dbCon);
 		int i = 1;
-		boolean hasMoreData = true;
-		while(hasMoreData){
+		while(true){
 			LOG.info("we are at page : "+i);
-			hasMoreData = false;
 			Document page = Jsoup.connect(SITE_HOME_URL+i).timeout(Constants.REQUEST_TIMEOUT).header("User-Agent", Constants.USER_AGENT).get();
 			if(page != null){
 				Element providerElem = page.getElementsByClass("provider-directory").first();
@@ -61,7 +58,6 @@ public class ActivityRocketScraper implements IScraper {
 					}
 					Elements boxElem = providerElem.getElementsByClass("box");
 					if(boxElem != null){
-						hasMoreData = true;
 						for (Element box : boxElem) {
 							Element headingElem = box.getElementsByTag("h2").first();
 							Element aElem = headingElem.getElementsByTag("a").first();
@@ -223,9 +219,9 @@ public class ActivityRocketScraper implements IScraper {
 						if(progForElem != null){
 							String gender = progForElem.text().trim();
 							if(gender.equals("girls only")){
-								map.put(Constants.KEY_GIRLS_ONLY, Constants.GIRLS_ONLY);
+								map.put(Constants.KEY_PROGRAM_FOR, Constants.PROGRAM_FOR_GIRLS);
 							}else if(gender.equals("boys only")){
-								map.put(Constants.KEY_BOYS_ONLY, Constants.BOYS_ONLY);
+								map.put(Constants.KEY_PROGRAM_FOR, Constants.PROGRAM_FOR_BOYS);
 							}
 						}
 						
@@ -245,8 +241,8 @@ public class ActivityRocketScraper implements IScraper {
 						if(priceElem != null){
 							String priceText = priceElem.text().trim();
 							if(!(priceText.contains("Call Provider") || priceText.contains("Free"))){
-								if(priceText.contains("Ã³")){
-									String[] values = priceText.split("Ã³");
+								if(priceText.contains("—")){
+									String[] values = priceText.split("—");
 									map.put(Constants.KEY_FROM_PRICE, values[0].replace("$", ""));
 									map.put(Constants.KEY_TO_PRICE, values[1].replace("$", ""));
 								}else{
@@ -289,6 +285,12 @@ public class ActivityRocketScraper implements IScraper {
 								}
 								map.put(Constants.KEY_FROM_AGE, String.valueOf(fromAge));
 							}
+						}
+						
+						if(type.equals("Camps")){
+							map.put(Constants.KEY_ACTIVITY_TYPE, "Camp");
+						}else if(type.equals("Activities")){
+							map.put(Constants.KEY_ACTIVITY_TYPE, "Class");
 						}
 						System.out.println(map.toString());
 						LOG.info("Activity detail : "+map.toString());

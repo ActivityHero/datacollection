@@ -33,7 +33,7 @@ import com.sun.corba.se.impl.orbutil.closure.Constant;
 public class Upload {
 	
 	private static Logger LOG = LoggerFactory.getLogger(Upload.class);
-	private static String site = "activityrocket";
+	private static String site = "";
 	private static boolean uploadCSV = false;
 	private static boolean changeAgeToMonths = true;
 	private static DBConnection dbCon = new DBConnection();
@@ -42,9 +42,13 @@ public class Upload {
 			changeAgeToMonths = false;
 			uploadCSV();
 		}else{
-			LOG.info("Started uploading records for site="+site);
-			uploadFromDB();
-			LOG.info("Finished uploading records for site="+site);
+			if(site.isEmpty()){
+				ScraperUtil.log("Please specify which site to upload");
+			}else{
+				LOG.info("Started uploading records for site="+site);
+				uploadFromDB();
+				LOG.info("Finished uploading records for site="+site);
+			}
 		}
 	}
 	
